@@ -1,14 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 import java.util.Comparator;
 
 
-public class FootballClubComparator implements Comparator<FootballClub> {
+public class FootballClubPointsComparator implements Comparator<FootballClub> {
     
     @Override
     public int compare(FootballClub t, FootballClub t1) {

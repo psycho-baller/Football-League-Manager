@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 public class FootballClub extends SportsClub {
 
     private int winCount;
@@ -77,13 +71,13 @@ public class FootballClub extends SportsClub {
     @Override
     public String toString() {
 
-        String clubStats = "Club " + getName() + " matches won: " + getWinCount() + "\n" +
-                "Club " + getName() + " matches lost: " + getDefeatCount() + "\n" +
-                "Club " + getName() + " matches draw: " + getDrawCount() + "\n" +
-                "Club " + getName() + " scored goals: " + getScoredGoalsCount() + "\n" +
-                "Club " + getName() + " received goals: " + getReceivedGoalsCount() + "\n" +
-                "Club " + getName() + " points: " + getPoints() + "\n" +
-                "Club " + getName() + " matches played: " + getMatchesPlayed() + "\n";
+        String clubStats = "Club " + getName() + ":\n" + "matches won: " + getWinCount() + "\n" +
+                "matches lost: " + getDefeatCount() + "\n" +
+                "matches draw: " + getDrawCount() + "\n" +
+                "matches played: " + getMatchesPlayed() + "\n" +
+                "scored goals: " + getScoredGoalsCount() + "\n" +
+                "received goals: " + getReceivedGoalsCount() + "\n" +
+                "points: " + getPoints();
         return clubStats;
 
     }

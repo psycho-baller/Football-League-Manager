@@ -1,12 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.io.*;
 import java.util.*;
-import java.lang.Object.*;
 
 
 public class PremierLeagueManager{
@@ -18,7 +11,7 @@ public class PremierLeagueManager{
     private final ArrayList<Match> matches;
     
     public PremierLeagueManager(int maxNumberOfClubs) {
-        
+        // initialize arraylists of football clubs and matches
         this.maxNumberOfClubs = maxNumberOfClubs;
         league = new ArrayList<>();
         matches = new ArrayList<>();
@@ -41,8 +34,8 @@ public class PremierLeagueManager{
             System.out.println("1: Create new team and add it to the league");
             System.out.println("2: Delete existing team from league");
             System.out.println("3: Add a Played Match");
-            System.out.println("4: Display Statistics for team");
-            System.out.println("5: Display the Premier League Table");
+            System.out.println("4: Display the Premier League Scoreboard");
+            System.out.println("5: Display cool Statistics");
             System.out.println("6: get stored data");
             System.out.println("7: Exit (save data)");
             System.out.println("-----------------------------------------");
@@ -56,8 +49,8 @@ public class PremierLeagueManager{
                 case 1 -> addTeam();
                 case 2 -> deleteTeam();
                 case 3 -> addPlayedMatch();
-                case 4 -> displayStatistics();
-                case 5 -> displayLeagueTable();
+                case 4 -> displayLeagueScoreboard();
+                case 5 -> displayStatistics();
                 case 6 -> getStoredData();
                 case 7 -> exit();
                 default -> System.out.println("Wrong Command");
@@ -96,11 +89,27 @@ public class PremierLeagueManager{
     }
     
     private void displayStatistics() {
+        System.out.println("""
+        1. Get Individual Club Statistics
+        2. Get Leaderboard sorted by most goals per match
+        """);
+        int command = 0;
+        try {
+            command = Integer.parseInt(scanner.nextLine());
+        } catch (Exception ignored) {}
+
+        switch (command) {
+            case 1 -> individualClubStats();
+            case 2 -> MostGoalsPerMatch();
+            default -> System.out.println("Wrong Command");
+        }
+    }
+    private void individualClubStats() {
         System.out.println("Insert club name: ");
-        String clubStats = scanner.nextLine();
+        String clubName = scanner.nextLine();
         boolean clubExists = false;
         for (FootballClub club : league) {
-            if (club.getName().equalsIgnoreCase(clubStats)) {
+            if (club.getName().equalsIgnoreCase(clubName)) {
                 clubExists = true;
                 break;
             }
@@ -110,21 +119,6 @@ public class PremierLeagueManager{
             displayStatistics();
             return;
         }
-        //TODO: add menu for different types of statistics
-        System.out.println("Menu");
-        //TODO: Menu here
-        int command = 0;
-        try {
-            command = Integer.parseInt(scanner.nextLine());
-        } catch (Exception ignored) {}
-
-        switch (command) {
-            case 1 -> everything(clubStats);
-
-            default -> System.out.println("Wrong Command");
-        }
-    }
-    private void everything(String clubName) {
         for (FootballClub club : league) {
             if (club.getName().equalsIgnoreCase(clubName)) {
                 System.out.println(club.toString());
@@ -133,9 +127,27 @@ public class PremierLeagueManager{
         }
     }
 
-    private void displayLeagueTable() {
+    private void MostGoalsPerMatch() {
+        Collections.sort(league, new FootballClubGoalsComparator());
+        int counter = 0;
+        for(FootballClub club : league) {
+            counter++;
+            float goalsPerMatch = (float) club.getScoredGoalsCount()/club.getMatchesPlayed();
+            System.out.println(counter + ". " + club.getName() + ": " + club.getScoredGoalsCount() + " total goals and "  + goalsPerMatch + " goals per match");
+        }
+
+//        FootballClub club = league.get(0);
+//        for (FootballClub footballClub : league) {
+//            if (footballClub.getScoredGoalsCount() > club.getScoredGoalsCount()) {
+//                club = footballClub;
+//            }
+//        }
+//        System.out.println("Most goals scored by: " + club.getName());
+    }
+
+    private void displayLeagueScoreboard() {
         
-        Collections.sort(league, new FootballClubComparator());
+        Collections.sort(league, new FootballClubPointsComparator());
         for(FootballClub club : league) {
             System.out.println("Club: " + club.getName()+" Points: "+ club.getPoints()+" goal difference: "+ (club.getScoredGoalsCount()-club.getReceivedGoalsCount()));
         }
