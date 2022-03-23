@@ -29,16 +29,16 @@ public class PremierLeagueManager{
     private void Menu() {
         
         while(true) {
-            System.out.println("-----------------------------------------");
-            System.out.println("Premier League menu: ");
-            System.out.println("1: Create new team and add it to the league");
-            System.out.println("2: Delete existing team from league");
-            System.out.println("3: Add a Played Match");
-            System.out.println("4: Display the Premier League Scoreboard");
-            System.out.println("5: Display cool Statistics");
-            System.out.println("6: get stored data");
-            System.out.println("7: Exit (save data)");
-            System.out.println("-----------------------------------------");
+            System.out.println("---------------------------------------------");
+            System.out.println("    Premier League menu: ");
+            System.out.println("    1: Create new team and add it to the league");
+            System.out.println("    2: Delete existing team from league");
+            System.out.println("    3: Add a Played Match");
+            System.out.println("    4: Display raw Data");
+            System.out.println("    5: Display cool Data");
+            System.out.println("    6: get stored data");
+            System.out.println("    7: Exit (save data)");
+            System.out.println("---------------------------------------------");
             String line = scanner.nextLine();
             int command = 0;
             try {
@@ -49,7 +49,7 @@ public class PremierLeagueManager{
                 case 1 -> addTeam();
                 case 2 -> deleteTeam();
                 case 3 -> addPlayedMatch();
-                case 4 -> displayLeagueScoreboard();
+                case 4 -> displayRawData();
                 case 5 -> displayStatistics();
                 case 6 -> getStoredData();
                 case 7 -> exit();
@@ -87,11 +87,23 @@ public class PremierLeagueManager{
          }
          System.out.println("No such club in league");
     }
-    
+
+    private void displayRawData() {
+        for(FootballClub club : league) {
+            System.out.println(club.toString());
+            System.out.println("---------------------------------------------");
+        }
+    }
+
     private void displayStatistics() {
         System.out.println("""
-        1. Get Individual Club Statistics
-        2. Get Leaderboard sorted by most goals per match
+        ---------------------------------------------
+        1: Get Individual Club Statistics
+        2: Get Premier League Scoreboard
+        3: Get Leaderboard sorted by most goals per match
+        4: 
+        5: Back to main menu
+        ---------------------------------------------
         """);
         int command = 0;
         try {
@@ -100,7 +112,10 @@ public class PremierLeagueManager{
 
         switch (command) {
             case 1 -> individualClubStats();
-            case 2 -> MostGoalsPerMatch();
+            case 2 -> displayLeagueScoreboard();
+            case 3 -> MostGoalsPerMatch();
+            case 4 -> {} // TODO
+            case 5 -> {}
             default -> System.out.println("Wrong Command");
         }
     }
@@ -135,14 +150,6 @@ public class PremierLeagueManager{
             float goalsPerMatch = (float) club.getScoredGoalsCount()/club.getMatchesPlayed();
             System.out.println(counter + ". " + club.getName() + ": " + club.getScoredGoalsCount() + " total goals and "  + goalsPerMatch + " goals per match");
         }
-
-//        FootballClub club = league.get(0);
-//        for (FootballClub footballClub : league) {
-//            if (footballClub.getScoredGoalsCount() > club.getScoredGoalsCount()) {
-//                club = footballClub;
-//            }
-//        }
-//        System.out.println("Most goals scored by: " + club.getName());
     }
 
     private void displayLeagueScoreboard() {
@@ -237,8 +244,8 @@ public class PremierLeagueManager{
                 lines.add(line);
             }
             reader.close();
-            List<String> clubs = lines.subList(0, lines.indexOf("---"));
-            List<String> match = lines.subList(lines.indexOf("---") + 1, lines.size());
+            List<String> clubs = lines.subList(0, lines.indexOf(""));
+            List<String> match = lines.subList(lines.indexOf("") + 1, lines.size());
 
 
 
@@ -282,7 +289,7 @@ public class PremierLeagueManager{
         for (FootballClub club : league) {
             writer.println(club.getName() + "," + club.getWinCount() + "," + club.getDrawCount() + "," + club.getDefeatCount() + "," + club.getScoredGoalsCount() + "," + club.getReceivedGoalsCount());
         }
-        writer.println("---");
+        writer.println("");
         for (Match match : matches) {
             writer.println(match.getTeamA().getName() + "," + match.getTeamB().getName() + "," + match.getTeamAScore() + "," + match.getTeamBScore());
         }

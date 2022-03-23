@@ -71,14 +71,12 @@ public class FootballClub extends SportsClub {
     @Override
     public String toString() {
 
-        String clubStats = "Club " + getName() + ":\n" + "matches won: " + getWinCount() + "\n" +
+        return "Club " + getName() + ":\n" + "matches won: " + getWinCount() + "\n" +
                 "matches lost: " + getDefeatCount() + "\n" +
                 "matches draw: " + getDrawCount() + "\n" +
                 "matches played: " + getMatchesPlayed() + "\n" +
                 "scored goals: " + getScoredGoalsCount() + "\n" +
                 "received goals: " + getReceivedGoalsCount() + "\n" +
                 "points: " + getPoints();
-        return clubStats;
-
     }
 }
