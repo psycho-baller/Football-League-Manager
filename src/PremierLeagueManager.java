@@ -11,7 +11,7 @@ public class PremierLeagueManager{
     private final ArrayList<Match> matches;
     
     public PremierLeagueManager(int maxNumberOfClubs) {
-        // initialize arraylists of football clubs and matches
+        // initialize arraylists of football clubs and matches for each new league
         this.maxNumberOfClubs = maxNumberOfClubs;
         league = new ArrayList<>();
         matches = new ArrayList<>();
@@ -26,6 +26,9 @@ public class PremierLeagueManager{
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
+    /**
+     * the first thing that the user sees when they start the program
+     */
     private void Menu() {
         
         while(true) {
@@ -58,6 +61,9 @@ public class PremierLeagueManager{
         }
     }
 
+    /**
+     * adds a new team to the league
+     */
     private void addTeam(){
         if(league.size() == maxNumberOfClubs) {
             System.out.println("Can't add more clubs to league");
@@ -74,7 +80,10 @@ public class PremierLeagueManager{
         }
         league.add(club);
     }
-    
+
+    /**
+     * deletes a team from the league
+     */
     private void deleteTeam() {
         System.out.println("Insert club name: ");
         String line = scanner.nextLine();
@@ -88,6 +97,9 @@ public class PremierLeagueManager{
          System.out.println("No such club in league");
     }
 
+    /**
+     * shows the raw data for all the teams in the league
+     */
     private void displayRawData() {
         for(FootballClub club : league) {
             System.out.println(club.toString());
@@ -95,6 +107,9 @@ public class PremierLeagueManager{
         }
     }
 
+    /**
+     * shows a list of different options for the user to choose from
+     */
     private void displayStatistics() {
         System.out.println("""
         ---------------------------------------------

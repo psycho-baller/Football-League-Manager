@@ -19,9 +19,6 @@ public class FootballClubGoalsComparator implements Comparator<FootballClub> {
                 else {
                     return 1;
                 }
-//                int goalDif = t.getScoredGoalsCount() - t.getReceivedGoalsCount();
-//                int goalDif1 = t1.getScoredGoalsCount() - t1.getReceivedGoalsCount();
-//                return Integer.compare(goalDif1, goalDif);
             }
         }
     }
