@@ -99,9 +99,9 @@ public class PremierLeagueManager{
         System.out.println("""
         ---------------------------------------------
         1: Get Individual Club Statistics
-        2: Get Premier League Scoreboard
+        2: Get Premier League Leaderboard
         3: Get Leaderboard sorted by most goals per match
-        4: 
+        4: Get best player from a club
         5: Back to main menu
         ---------------------------------------------
         """);
@@ -114,11 +114,17 @@ public class PremierLeagueManager{
             case 1 -> individualClubStats();
             case 2 -> displayLeagueScoreboard();
             case 3 -> MostGoalsPerMatch();
-            case 4 -> {} // TODO
-            case 5 -> {}
+
+            case 4 -> getBestPlayer();
+            case 5 -> System.out.println("Returning to menu...");
             default -> System.out.println("Wrong Command");
         }
     }
+
+    /**
+     * Prints out individual statistics for a given club
+     *
+     */
     private void individualClubStats() {
         System.out.println("Insert club name: ");
         String clubName = scanner.nextLine();
@@ -149,6 +155,28 @@ public class PremierLeagueManager{
             counter++;
             float goalsPerMatch = (float) club.getScoredGoalsCount()/club.getMatchesPlayed();
             System.out.println(counter + ". " + club.getName() + ": " + club.getScoredGoalsCount() + " total goals and "  + goalsPerMatch + " goals per match");
+        }
+    }
+
+    private void getBestPlayer(){
+        System.out.println("Insert club name: ");
+        String clubName = scanner.nextLine();
+        boolean clubExists = false;
+        for (FootballClub club : league) {
+            if (club.getName().equalsIgnoreCase(clubName)) {
+                clubExists = true;
+                break;
+            }
+        }
+        if (!clubExists) {
+            System.out.println("No such club in league");
+            displayStatistics();
+            return;
+        }
+        for (FootballClub club : league) {
+            if (club.getName().equalsIgnoreCase(clubName)) {
+                club.getBestPlayer();
+            }
         }
     }
 
