@@ -28,8 +28,6 @@ public class FootballClub extends SportsClub {
      * club, with random data for each player
      */
     public void setPlayers() {
-        // REFACTOR THIS
-
         // players who will attempt to score
         for (int i = 0; i < 1; i++) {
             Player player = new Player();
@@ -129,8 +127,8 @@ public class FootballClub extends SportsClub {
      */
     public void getBestPlayer() {
         ArrayList<Integer> goals = new ArrayList<Integer>();
-        for (int i = 0; i< players.size(); i++) {
-            goals.add(players.get(i).getGoalsScored());
+        for (Player player : players) {
+            goals.add(player.getGoalsScored());
         }
 
 

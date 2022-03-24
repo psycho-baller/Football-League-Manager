@@ -1,5 +1,7 @@
+import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 
 public class PremierLeagueManager{
@@ -9,14 +11,16 @@ public class PremierLeagueManager{
     private final ArrayList<FootballClub> league;
     private final Scanner scanner;
     private final ArrayList<Match> matches;
-    
-    public PremierLeagueManager(int maxNumberOfClubs) {
+
+    public PremierLeagueManager(int maxNumberOfClubs, boolean test) {
         // initialize arraylists of football clubs and matches for each new league
         this.maxNumberOfClubs = maxNumberOfClubs;
         league = new ArrayList<>();
         matches = new ArrayList<>();
         scanner = new Scanner(System.in);
-        Menu();
+        if (!test) {
+            Menu();
+        }
     }
 
     public static String capitalize(String str) {
@@ -56,6 +60,7 @@ public class PremierLeagueManager{
                 case 5 -> displayStatistics();
                 case 6 -> getStoredData();
                 case 7 -> exit();
+                // if none of the above are called, the default is called
                 default -> System.out.println("Wrong Command");
             }
         }
@@ -64,20 +69,23 @@ public class PremierLeagueManager{
     /**
      * adds a new team to the league
      */
-    private void addTeam(){
+    void addTeam(){
+        //checks if the league is full
         if(league.size() == maxNumberOfClubs) {
             System.out.println("Can't add more clubs to league");
             return;
         }
-        
+        // if not full, ask for the name of the club
         System.out.println("Insert Club Name: ");
         String line = scanner.nextLine();
         FootballClub club = new FootballClub(capitalize(line));
 
+        // if the club already exists, don't add it
         if(league.contains(club)){
             System.out.println("This club is already in the league");
             return;
         }
+        // if club doesn't exist, add it to the league
         league.add(club);
     }
 
@@ -129,7 +137,6 @@ public class PremierLeagueManager{
             case 1 -> individualClubStats();
             case 2 -> displayLeagueScoreboard();
             case 3 -> MostGoalsPerMatch();
-
             case 4 -> getBestPlayer();
             case 5 -> System.out.println("Returning to menu...");
             default -> System.out.println("Wrong Command");
@@ -279,11 +286,11 @@ public class PremierLeagueManager{
     private void getStoredData(){
         BufferedReader reader = null;
         try {
-            //save league into a txt file
+            //save league into a csv file
             reader = new BufferedReader(new FileReader(Main.getData()));
             String line;
             ArrayList<String> lines = new ArrayList<>();
-            while ((line = reader.readLine()) != null){//arraylist  will store each line of the world.txt file
+            while ((line = reader.readLine()) != null){//arraylist  will store each line of the data.csv file
                 lines.add(line);
             }
             reader.close();
@@ -342,7 +349,7 @@ public class PremierLeagueManager{
         System.out.print("\nBye!");
         System.exit(0);
     }
-} 
+}
     
     
     

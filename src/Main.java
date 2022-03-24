@@ -13,7 +13,7 @@ public class Main {
         }
         data = args[0];
         int numOfClubs = Integer.parseInt(args[1]);
-        PremierLeagueManager plm = new PremierLeagueManager(numOfClubs);
+        PremierLeagueManager plm = new PremierLeagueManager(numOfClubs, false);
     }
     public static File getData() {
         File file = new File(data);
