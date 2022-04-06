@@ -16,7 +16,7 @@ public class MainApplication extends Application {
     public static File getData() {
         File file = new File(data);
         if (!file.exists() || !file.isFile() || !file.canWrite()) {
-            System.err.printf("The world file %s does not exist!%n", file.getAbsoluteFile());
+            System.err.printf("The data file %s does not exist!%n", file.getAbsoluteFile());
             System.exit(1);
         }
         return file;
@@ -24,7 +24,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("Main.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 630);
         stage.setTitle("Football Manager");
         stage.setScene(scene);
         stage.show();
