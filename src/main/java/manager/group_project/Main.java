@@ -49,7 +49,6 @@ public class Main extends Application {
             hasArguments = true;
             data = "src\\main\\resources\\" + args[0];
             numOfClubs = Integer.parseInt(args[1]);
-            PremierLeagueManager plm = new PremierLeagueManager(numOfClubs);
             BufferedReader reader = null;
             try {
                 //save league into a csv file
@@ -64,8 +63,11 @@ public class Main extends Application {
         launch();
     }
 
+    // these arralists be added to the league in the controller
+    // we are just storing the data from the file here
+    // in the controller we will put it in the league
     public static List<String> clubs;
-    static List<String> match;
+    public static List<String> match;
     static void loadData(BufferedReader reader) throws IOException {
         String line;
         ArrayList<String> lines = new ArrayList<>();
