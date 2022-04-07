@@ -41,4 +41,8 @@ public class Match {
         this.awayTeamScore = awayTeamScore;
     }
 
+    @Override
+    public String toString() {
+        return homeTeam.getName() + ":" + homeTeamScore + " - " + awayTeamScore + ":" + awayTeam.getName();
+    }
 }

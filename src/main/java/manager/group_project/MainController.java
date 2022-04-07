@@ -1,25 +1,49 @@
 package manager.group_project;
 
+import Comparators.FootballClubGoalsComparator;
+import Comparators.FootballClubPointsComparator;
+import javafx.event.ActionEvent;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import manager.FootballClub;
+import manager.Match;
+import manager.PremierLeagueManager;
 import manager.group_project.*;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
-public class MainController {
+import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
 
-    @FXML
-    private Button addClubButton;
+import static manager.group_project.MainApplication.numOfClubs;
+
+public class MainController implements Initializable {
+
+    private boolean sortedByGoals;
+
+    public static String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+    private PremierLeagueManager plm;
 
     @FXML
     private TextField addClubTextfield;
 
-    @FXML
-    private AnchorPane addDataSection;
-
-    @FXML
-    private Button addMatchButton;
 
     @FXML
     private TextField awayClubNameTextfield;
@@ -27,8 +51,6 @@ public class MainController {
     @FXML
     private TextField awayGoalsTextfield;
 
-    @FXML
-    private AnchorPane getDataSection;
 
     @FXML
     private TextField homeClubNameTextfield;
@@ -37,28 +59,374 @@ public class MainController {
     private TextField homeGoalsTextfield;
 
     @FXML
-    private AnchorPane leaderboardArea;
+    private TextArea leaderboardArea;
 
     @FXML
-    private AnchorPane matchLogsArea;
+    private TextArea matchLogsArea;
 
     @FXML
-    private Button removeClubButton;
+    private Label status;
 
     @FXML
-    private Button sortButton;
+    private TextField viewClubStatsTextfield;
+
 
     @FXML
-    private Button viewClubButton;
-
-    @FXML
-    private TextField viewClubNameTextfield;
-
-    @FXML
-    private AnchorPane viewSection;
-    
-    void initialze() {
-        // TODO implement here
+    void aboutAlert(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText("Message");
+        alert.setContentText("Author: Rami Maalouf\nEmail: rami.rami@ucalgary.ca\nVersion: v1.0\n");// TODO description
+        alert.show();
     }
 
+    @FXML
+    private Button addMatch;
+    @FXML
+    private Button removeClub;
+    @FXML
+    private Button viewClubStats;
+    @FXML
+    private Button viewRawData;
+    @FXML
+    private Button goalsPerGame;
+
+    @FXML
+    void addMatch(MouseEvent event) {
+        if (awayClubNameTextfield.getText().isEmpty() || homeClubNameTextfield.getText().isEmpty() || awayGoalsTextfield.getText().isEmpty() || homeGoalsTextfield.getText().isEmpty()) {
+            status.setText("Please fill all the fields!");
+        } else {
+
+            String homeClubName = homeClubNameTextfield.getText();
+            FootballClub home = null;
+            for (FootballClub club : plm.getLeague()) {
+                if (club.getName().equalsIgnoreCase(homeClubName)) {
+                    home = club;
+                }
+            }
+            if (home == null) {
+                status.setText("Home club does not exist in the league");
+                return;
+            }
+            String awayClubName = awayClubNameTextfield.getText();
+            FootballClub away = null;
+            for (FootballClub club : plm.getLeague()) {
+                if (club.getName().equals(capitalize(awayClubName)))
+                    away = club;
+            }
+            if (away == null){
+                status.setText("Home club does not exist in the league");
+                return;
+            }
+            if (home.equals(away)) {
+                status.setText("You can't play against yourself");
+                return;
+            }
+            int homeGoals = -1;
+            try {
+                homeGoals = Integer.parseInt(homeGoalsTextfield.getText());
+            } catch (Exception ignored) {
+                status.setText("Home goals must be a number");
+                return;
+            }
+            if (homeGoals == -1) {
+                System.out.println("You have to enter number of goals");
+                return;
+            }
+            int awayGoals = -1;
+            try {
+                awayGoals = Integer.parseInt(awayGoalsTextfield.getText());
+            } catch (Exception ignored) {
+                status.setText("Away goals must be a number");
+                return;
+            }
+            if (awayGoals == -1) {
+                status.setText("You have to enter number of goals");
+                return;
+            }
+            Match match = new Match();
+            match.setHomeTeam(home);
+            match.setAwayTeam(away);
+            match.setHomeTeamScore(homeGoals);
+            match.setAwayTeamScore(awayGoals);
+            plm.addMatch(match);
+            home.setScoredGoalsCount(home.getScoredGoalsCount() + homeGoals);
+            away.setScoredGoalsCount(away.getScoredGoalsCount() + awayGoals);
+            home.setReceivedGoalsCount(home.getReceivedGoalsCount() + awayGoals);
+            away.setReceivedGoalsCount(away.getReceivedGoalsCount() + homeGoals);
+            if (homeGoals > awayGoals) {
+                home.addWin();
+                away.addDefeat();
+            } else if (homeGoals < awayGoals) {
+                away.addWin();
+                home.addDefeat();
+            } else {
+                home.addDraw();
+                away.addDraw();
+            }
+        }
+        updateMatchLog();
+        updateLeaderboard();
+    }
+
+    @FXML
+    void closeApp(ActionEvent event) {
+        System.exit(0);
+    }
+
+    void sortByGoalsPerGame(){
+        Collections.sort(plm.getLeague(), new FootballClubGoalsComparator());
+        StringBuilder sb = new StringBuilder();
+        sb.append("Rank\t").append("Club\t").append("Points\t").append("Goals/match\t").append("Wins\t").append("Losses\n");
+        int rank = 1;
+        for (FootballClub club : plm.getLeague()) {
+            float goalsPerMatch = 0f;
+            if (club.getMatchesPlayed() != 0) {
+                goalsPerMatch = (float) club.getScoredGoalsCount() / club.getMatchesPlayed();
+                goalsPerMatch = (float) (Math.round(goalsPerMatch * 100.0) / 100.0);
+            }
+            sb.append(rank).append("\t").append(club.getName()).append("\t").append(club.getPoints()).append("\t").append(goalsPerMatch).append("\t\t").append(club.getWinCount()).append("\t").append(club.getDefeatCount()).append("\n");
+            rank++;
+        }
+        leaderboardArea.setText(sb.toString());
+        leaderboardArea.setFont(Font.font("Courier New", FontWeight.BOLD, 13));
+    }
+
+    @FXML
+    void goalsPerGame(MouseEvent event) {
+        if (sortedByGoals) {
+            sortedByGoals = false;
+            updateLeaderboard();
+        }else{
+            sortedByGoals = true;
+            sortByGoalsPerGame();
+        }
+    }
+    private void checkFiles(File fileWorld) {
+        //Check world file
+        if (!fileWorld.exists() || !fileWorld.isFile() || !fileWorld.canRead()) {
+            status.setText("Error loading world!");
+            status.setTextFill(Color.RED);
+        }
+    }
+    @FXML
+    void loadWorld(ActionEvent event) {
+        plm = new PremierLeagueManager(numOfClubs);
+        try {
+            FileChooser fc = new FileChooser();
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text files", "*.txt"));
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Comma Separated Values files", "*.csv"));
+
+
+            fc.setInitialDirectory(new File("src/main/resources"));
+            fc.setInitialFileName("data.csv");
+            File fileWorld = fc.showSaveDialog(new Stage());
+            checkFiles(fileWorld);
+            //save league into a csv file
+            BufferedReader reader = new BufferedReader(new FileReader(fileWorld));
+            String line;
+            ArrayList<String> lines = new ArrayList<>();
+            while ((line = reader.readLine()) != null) {//arraylist  will store each line of the data.csv file
+                lines.add(line);
+            }
+            reader.close();
+            List<String> clubs = lines.subList(0, lines.indexOf(""));
+            List<String> match = lines.subList(lines.indexOf("") + 1, lines.size());
+
+
+            for (String s : clubs) {
+                String[] parts = s.split(",");
+                FootballClub club =  new FootballClub(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5]));
+                plm.addClub(club);
+            }
+            for (String s : match) {
+                String[] parts = s.split(",");
+                Match m = new Match();
+                for (FootballClub club : plm.getLeague()) {
+                    if (club.getName().equalsIgnoreCase(parts[0])) {
+                        m.setHomeTeam(club);
+                    }
+                    if (club.getName().equalsIgnoreCase(parts[1])) {
+                        m.setAwayTeam(club);
+                    }
+                }
+                m.setHomeTeamScore(Integer.parseInt(parts[2]));
+                m.setAwayTeamScore(Integer.parseInt(parts[3]));
+                plm.addMatch(m);
+            }
+            status.setText("League loaded successfully!");
+            updateLeaderboard();
+            if (plm.getLeague().size() != 0) {
+                addMatch.setDisable(false);
+                removeClub.setDisable(false);
+                viewClubStats.setDisable(false);
+                viewRawData.setDisable(false);
+                goalsPerGame.setDisable(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status.setText("Error loading league!");
+            status.setTextFill(Color.RED);
+        }
+
+    }
+
+    @FXML
+    void removeClub(MouseEvent event) {
+        FootballClub club = new FootballClub(capitalize(addClubTextfield.getText()));
+        if (plm.getLeague().contains(club)) {   //checks if the club exists in the league
+            plm.removeClub(club);
+            status.setText("Club removed!");
+            updateLeaderboard();
+        } else {
+            status.setText("This club is not in the league");
+            status.setTextFill(Color.RED);
+        }
+    }
+    @FXML
+    void addClub(MouseEvent event) {
+        //checks if the league is full
+        if (plm.getLeague().size() == plm.getMaxNumberOfClubs()) {
+            status.setText("Can't add more clubs to league");
+            status.setTextFill(Color.RED);
+            return;
+        }
+        FootballClub club = new FootballClub(capitalize(addClubTextfield.getText()));
+
+        if (plm.getLeague().contains(club)) {   //checks if the club already exists
+            status.setText("This club is already in the league");
+            status.setTextFill(Color.RED);
+        } else {
+            plm.addClub(club);
+            status.setText("Club added");
+            addMatch.setDisable(false);
+            removeClub.setDisable(false);
+            viewClubStats.setDisable(false);
+            viewRawData.setDisable(false);
+            goalsPerGame.setDisable(false);
+            updateLeaderboard();
+        }
+    }
+
+
+    @FXML
+    void saveAsTxt(ActionEvent event) {
+        FileChooser fc = new FileChooser();
+        fc.setInitialDirectory(new File("src/main/resources")); // set the initial directory
+        fc.setInitialFileName("data.csv"); //set initial file name
+        File file = fc.showSaveDialog(new Stage());
+        checkFiles(file);
+        save(file);
+    }
+
+    @FXML
+    void saveTxt(ActionEvent event) {
+        File file = new File("src/main/resources/data.csv");
+        checkFiles(file);
+        save(file);
+    }
+    void save(File file){
+        if (file == null) { // if the user cancels the file chooser
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("File not saved");
+            alert.show();
+            status.setText("Could not save file");
+            status.setTextFill(Color.RED);
+            return;
+        }
+        PrintWriter writer = null;
+        try {
+            //save league into a txt file
+            writer = new PrintWriter(new FileWriter(file));
+        } catch (IOException e) {
+            e.printStackTrace();
+            status.setText("The league file does not exist!");
+            status.setTextFill(Color.RED);
+        }
+        for (FootballClub club : plm.getLeague()) {
+            writer.println(club.getName() + "," + club.getWinCount() + "," + club.getDrawCount() + "," + club.getDefeatCount() + "," + club.getScoredGoalsCount() + "," + club.getReceivedGoalsCount());
+        }
+        writer.println("");
+        for (Match match : plm.getMatches()) {
+            writer.println(match.getTeamA().getName() + "," + match.getTeamB().getName() + "," + match.getTeamAScore() + "," + match.getTeamBScore());
+        }
+        writer.flush();
+        writer.close();
+        status.setText("League saved!");
+    }
+
+    void updateMatchLog(){
+        StringBuilder sb = new StringBuilder();
+        for(Match match : plm.getMatches()){
+            sb.append(match.toString()).append("\n");
+        }
+        matchLogsArea.setText(sb.toString());
+    }
+
+    void updateLeaderboard() {
+        Collections.sort(plm.getLeague(), new FootballClubPointsComparator());
+        StringBuilder sb = new StringBuilder();
+        sb.append("Rank\t").append("Club\t").append("Points\t").append("Wins\t").append("Draws\t").append("Losses\t").append("Goal Difference\n");
+        int rank = 1;
+        for (FootballClub club : plm.getLeague()) {
+            sb.append(rank).append("\t").append(club.getName()).append("\t").append(club.getPoints()).append("\t").append(club.getWinCount()).append("\t").append(club.getDrawCount()).append("\t").append(club.getDefeatCount()).append("\t").append(club.getScoredGoalsCount() - club.getReceivedGoalsCount()).append("\n");
+            rank++;
+        }
+        leaderboardArea.setText(sb.toString());
+        leaderboardArea.setFont(Font.font("Courier New", FontWeight.BOLD, 13));
+    }
+
+    @FXML
+    void viewClubStats(MouseEvent event) {
+        for (FootballClub club : plm.getLeague()) {
+            if (club.getName().equalsIgnoreCase(viewClubStatsTextfield.getText())) {
+                matchLogsArea.setText(club.toString());
+                matchLogsArea.setFont(Font.font("courier", FontWeight.BOLD, 28));
+                return;
+            }
+        }
+        status.setText("This club is not in the league");
+        status.setTextFill(Color.RED);
+    }
+
+    @FXML
+    void viewRawData(MouseEvent event) {
+        StringBuilder sb = new StringBuilder();
+        for (FootballClub club : plm.getLeague()) {
+            sb.append(club.toString()).append("\n");
+            sb.append("-------------------").append("\n");
+        }
+        matchLogsArea.setText(sb.toString());
+        matchLogsArea.setFont(Font.font("courier", FontWeight.SEMI_BOLD, 25));
+    }
+
+//    @FXML
+//    void initialze() {
+//        // TODO implement here
+//        int maxNumberOfClubs = numOfClubs;
+//        plm = new PremierLeagueManager(maxNumberOfClubs);
+//    }
+
+    @Override @FXML
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        int maxNumberOfClubs = numOfClubs;
+        plm = new PremierLeagueManager(maxNumberOfClubs);
+        leaderboardArea.setEditable(false);
+        leaderboardArea.setMouseTransparent(true);
+        leaderboardArea.setFocusTraversable(false);
+        matchLogsArea.setEditable(false);
+        matchLogsArea.setMouseTransparent(false);
+        matchLogsArea.setFocusTraversable(false);
+        status.setMouseTransparent(true);
+        status.setFocusTraversable(false);
+        sortedByGoals = false;
+        if (plm.getLeague().size() == 0) {
+            addMatch.setDisable(true);
+            removeClub.setDisable(true);
+            viewClubStats.setDisable(true);
+            viewRawData.setDisable(true);
+            goalsPerGame.setDisable(true);
+        }
+    }
 }

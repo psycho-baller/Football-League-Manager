@@ -17,15 +17,13 @@ public class PremierLeagueManager {
     private final Scanner scanner;
     private final ArrayList<Match> matches;
 
-    public PremierLeagueManager(int maxNumberOfClubs, boolean test) {
+    public PremierLeagueManager(int maxNumberOfClubs) {
         // initialize arraylists of football clubs and matches for each new league
         this.maxNumberOfClubs = maxNumberOfClubs;
         league = new ArrayList<>();
         matches = new ArrayList<>();
         scanner = new Scanner(System.in);
-        if (!test) {
-            Menu();
-        }
+
     }
 
     public static String capitalize(String str) {
@@ -38,40 +36,57 @@ public class PremierLeagueManager {
     /**
      * the first thing that the user sees when they start the program
      */
-    private void Menu() {
-
-        while (true) {
-            System.out.println("---------------------------------------------");
-            System.out.println("    Premier League menu: ");
-            System.out.println("    1: Create new team and add it to the league");
-            System.out.println("    2: Delete existing team from league");
-            System.out.println("    3: Add a Played Match");
-            System.out.println("    4: Display raw Data");
-            System.out.println("    5: Display cool Data");
-            System.out.println("    6: get stored data");
-            System.out.println("    7: Exit (save data)");
-            System.out.println("---------------------------------------------");
-            String line = scanner.nextLine();
-            int command = 0;
-            try {
-                command = Integer.parseInt(line);
-            } catch (Exception ignored) {
-            }
-
-            switch (command) {
-                case 1 -> addTeam();
-                case 2 -> deleteTeam();
-                case 3 -> addPlayedMatch();
-                case 4 -> displayRawData();
-                case 5 -> displayStatistics();
-                case 6 -> getStoredData();
-                case 7 -> exit();
-                // if none of the above are called, the default is called
-                default -> System.out.println("Wrong Command");
-            }
-        }
+//    private void Menu() {
+//
+//        while (true) {
+//            System.out.println("---------------------------------------------");
+//            System.out.println("    Premier League menu: ");
+//            System.out.println("    1: Create new team and add it to the league");
+//            System.out.println("    2: Delete existing team from league");
+//            System.out.println("    3: Add a Played Match");
+//            System.out.println("    4: Display raw Data");
+//            System.out.println("    5: Display cool Data");
+//            System.out.println("    6: get stored data");
+//            System.out.println("    7: Exit (save data)");
+//            System.out.println("---------------------------------------------");
+//            String line = scanner.nextLine();
+//            int command = 0;
+//            try {
+//                command = Integer.parseInt(line);
+//            } catch (Exception ignored) {
+//            }
+//
+//            switch (command) {
+//                case 1 -> addTeam();
+//                case 2 -> deleteTeam();
+//                case 3 -> addPlayedMatch();
+//                case 4 -> displayRawData();
+//                case 5 -> displayStatistics();
+//                case 6 -> getStoredData();
+//                case 7 -> exit();
+//                // if none of the above are called, the default is called
+//                default -> System.out.println("Wrong Command");
+//            }
+//        }
+//    }
+    public void addClub(FootballClub club) {
+        league.add(club);
     }
-
+    public void removeClub(FootballClub club) {
+        league.remove(club);
+    }
+    public void addMatch(Match match) {
+        matches.add(match);
+    }
+    public ArrayList<FootballClub> getLeague() {
+        return league;
+    }
+    public ArrayList<Match> getMatches() {
+        return matches;
+    }
+    public int getMaxNumberOfClubs() {
+        return maxNumberOfClubs;
+    }
     /**
      * adds a new team to the league
      */
@@ -290,71 +305,71 @@ public class PremierLeagueManager {
         }
     }
 
-    private void getStoredData() {
-        BufferedReader reader = null;
-        try {
-            //save league into a csv file
-            reader = new BufferedReader(new FileReader(MainApplication.getData()));
-            String line;
-            ArrayList<String> lines = new ArrayList<>();
-            while ((line = reader.readLine()) != null) {//arraylist  will store each line of the data.csv file
-                lines.add(line);
-            }
-            reader.close();
-            List<String> clubs = lines.subList(0, lines.indexOf(""));
-            List<String> match = lines.subList(lines.indexOf("") + 1, lines.size());
-
-
-            for (String s : clubs) {
-                String[] parts = s.split(",");
-                league.add(new FootballClub(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5])));
-            }
-            for (String s : match) {
-                String[] parts = s.split(",");
-                Match m = new Match();
-                for (FootballClub club : league) {
-                    if (club.getName().equalsIgnoreCase(parts[0])) {
-                        m.setHomeTeam(club);
-                    }
-                    if (club.getName().equalsIgnoreCase(parts[1])) {
-                        m.setAwayTeam(club);
-                    }
-                }
-                m.setHomeTeamScore(Integer.parseInt(parts[2]));
-                m.setAwayTeamScore(Integer.parseInt(parts[3]));
-                matches.add(m);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.print("The world file does not exist!");
-            return;
-        }
-    }
-
-
-    private void exit() {
-        PrintWriter writer = null;
-        try {
-            //save league into a txt file
-            writer = new PrintWriter(new FileWriter(MainApplication.getData()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.print("The world file does not exist!");
-            System.exit(1);
-        }
-        for (FootballClub club : league) {
-            writer.println(club.getName() + "," + club.getWinCount() + "," + club.getDrawCount() + "," + club.getDefeatCount() + "," + club.getScoredGoalsCount() + "," + club.getReceivedGoalsCount());
-        }
-        writer.println("");
-        for (Match match : matches) {
-            writer.println(match.getTeamA().getName() + "," + match.getTeamB().getName() + "," + match.getTeamAScore() + "," + match.getTeamBScore());
-        }
-
-        writer.flush();
-        writer.close();
-        System.out.print("\nBye!");
-        System.exit(0);
-    }
+//    private void getStoredData() {
+//        BufferedReader reader = null;
+//        try {
+//            //save league into a csv file
+//            reader = new BufferedReader(new FileReader(MainApplication.getData()));
+//            String line;
+//            ArrayList<String> lines = new ArrayList<>();
+//            while ((line = reader.readLine()) != null) {//arraylist  will store each line of the data.csv file
+//                lines.add(line);
+//            }
+//            reader.close();
+//            List<String> clubs = lines.subList(0, lines.indexOf(""));
+//            List<String> match = lines.subList(lines.indexOf("") + 1, lines.size());
+//
+//
+//            for (String s : clubs) {
+//                String[] parts = s.split(",");
+//                league.add(new FootballClub(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5])));
+//            }
+//            for (String s : match) {
+//                String[] parts = s.split(",");
+//                Match m = new Match();
+//                for (FootballClub club : league) {
+//                    if (club.getName().equalsIgnoreCase(parts[0])) {
+//                        m.setHomeTeam(club);
+//                    }
+//                    if (club.getName().equalsIgnoreCase(parts[1])) {
+//                        m.setAwayTeam(club);
+//                    }
+//                }
+//                m.setHomeTeamScore(Integer.parseInt(parts[2]));
+//                m.setAwayTeamScore(Integer.parseInt(parts[3]));
+//                matches.add(m);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.err.print("The world file does not exist!");
+//            return;
+//        }
+//    }
+//
+//
+//    private void exit() {
+//        PrintWriter writer = null;
+//        try {
+//            //save league into a txt file
+//            writer = new PrintWriter(new FileWriter(MainApplication.getData()));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            System.err.print("The world file does not exist!");
+//            System.exit(1);
+//        }
+//        for (FootballClub club : league) {
+//            writer.println(club.getName() + "," + club.getWinCount() + "," + club.getDrawCount() + "," + club.getDefeatCount() + "," + club.getScoredGoalsCount() + "," + club.getReceivedGoalsCount());
+//        }
+//        writer.println("");
+//        for (Match match : matches) {
+//            writer.println(match.getTeamA().getName() + "," + match.getTeamB().getName() + "," + match.getTeamAScore() + "," + match.getTeamBScore());
+//        }
+//
+//        writer.flush();
+//        writer.close();
+//        System.out.print("\nBye!");
+//        System.exit(0);
+//    }
 }
     
     
