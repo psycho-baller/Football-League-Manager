@@ -14,10 +14,8 @@ import javafx.stage.Stage;
 import manager.FootballClub;
 import manager.Match;
 import manager.PremierLeagueManager;
-import manager.group_project.*;
 
 import javafx.fxml.FXML;
-import javafx.scene.layout.AnchorPane;
 
 import java.io.*;
 import java.net.URL;
@@ -26,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static manager.group_project.MainApplication.numOfClubs;
+import static manager.group_project.MainApplication.*;
 
 public class MainController implements Initializable {
 
@@ -167,6 +165,8 @@ public class MainController implements Initializable {
         }
         updateMatchLog();
         updateLeaderboard();
+        status.setText("Match added successfully!");
+        status.setTextFill(Color.LIGHTCORAL);
     }
 
     @FXML
@@ -202,6 +202,7 @@ public class MainController implements Initializable {
             sortByGoalsPerGame();
         }
     }
+
     private void checkFiles(File fileWorld) {
         //Check world file
         if (!fileWorld.exists() || !fileWorld.isFile() || !fileWorld.canRead()) {
@@ -256,6 +257,8 @@ public class MainController implements Initializable {
             }
             status.setText("League loaded successfully!");
             updateLeaderboard();
+            updateMatchLog();
+
             if (plm.getLeague().size() != 0) {
                 addMatch.setDisable(false);
                 removeClub.setDisable(false);
@@ -268,6 +271,7 @@ public class MainController implements Initializable {
             status.setText("Error loading league!");
             status.setTextFill(Color.RED);
         }
+
 
     }
 
@@ -362,6 +366,7 @@ public class MainController implements Initializable {
             sb.append(match.toString()).append("\n");
         }
         matchLogsArea.setText(sb.toString());
+        matchLogsArea.setFont(Font.font("Courier New", FontWeight.BOLD, 30));
     }
 
     void updateLeaderboard() {
@@ -382,7 +387,7 @@ public class MainController implements Initializable {
         for (FootballClub club : plm.getLeague()) {
             if (club.getName().equalsIgnoreCase(viewClubStatsTextfield.getText())) {
                 matchLogsArea.setText(club.toString());
-                matchLogsArea.setFont(Font.font("courier", FontWeight.BOLD, 28));
+                matchLogsArea.setFont(Font.font("Courier New", FontWeight.BOLD, 28));
                 return;
             }
         }
@@ -395,23 +400,46 @@ public class MainController implements Initializable {
         StringBuilder sb = new StringBuilder();
         for (FootballClub club : plm.getLeague()) {
             sb.append(club.toString()).append("\n");
-            sb.append("-------------------").append("\n");
+            sb.append("---------------------").append("\n");
         }
         matchLogsArea.setText(sb.toString());
-        matchLogsArea.setFont(Font.font("courier", FontWeight.SEMI_BOLD, 25));
+        matchLogsArea.setFont(Font.font("courier", FontWeight.SEMI_BOLD, 28));
     }
-
-//    @FXML
-//    void initialze() {
-//        // TODO implement here
-//        int maxNumberOfClubs = numOfClubs;
-//        plm = new PremierLeagueManager(maxNumberOfClubs);
-//    }
 
     @Override @FXML
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        int maxNumberOfClubs = numOfClubs;
-        plm = new PremierLeagueManager(maxNumberOfClubs);
+        plm = new PremierLeagueManager(numOfClubs);
+        if(hasArguments){
+            for (String s : clubs) {
+                String[] parts = s.split(",");
+                FootballClub club =  new FootballClub(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5]));
+                plm.addClub(club);
+            }
+            for (String s : match) {
+                String[] parts = s.split(",");
+                Match m = new Match();
+                for (FootballClub club : plm.getLeague()) {
+                    if (club.getName().equalsIgnoreCase(parts[0])) {
+                        m.setHomeTeam(club);
+                    }
+                    if (club.getName().equalsIgnoreCase(parts[1])) {
+                        m.setAwayTeam(club);
+                    }
+                }
+                m.setHomeTeamScore(Integer.parseInt(parts[2]));
+                m.setAwayTeamScore(Integer.parseInt(parts[3]));
+                plm.addMatch(m);
+            }
+            updateLeaderboard();
+            updateMatchLog();
+        }
+        if (plm.getLeague().size() == 0) {
+            addMatch.setDisable(true);
+            removeClub.setDisable(true);
+            viewClubStats.setDisable(true);
+            viewRawData.setDisable(true);
+            goalsPerGame.setDisable(true);
+        }
         leaderboardArea.setEditable(false);
         leaderboardArea.setMouseTransparent(true);
         leaderboardArea.setFocusTraversable(false);
@@ -420,13 +448,5 @@ public class MainController implements Initializable {
         matchLogsArea.setFocusTraversable(false);
         status.setMouseTransparent(true);
         status.setFocusTraversable(false);
-        sortedByGoals = false;
-        if (plm.getLeague().size() == 0) {
-            addMatch.setDisable(true);
-            removeClub.setDisable(true);
-            viewClubStats.setDisable(true);
-            viewRawData.setDisable(true);
-            goalsPerGame.setDisable(true);
-        }
     }
 }
