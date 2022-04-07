@@ -1,5 +1,5 @@
 ## Football League Manager
-This program creates, loads, saves, and edits football leagues for a simulation game called Monsters vs Heroes
+Football league manager is a football league simulator where u can add clubs, matches, and look at cool data from these matches
 
 ## How to run the League Manager
 - First you will have to make sure you have a JDK installed in your machine (at least version 16). You can install the latest version [here](https://www.java.com/en/download/)
