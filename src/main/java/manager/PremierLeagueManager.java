@@ -1,7 +1,11 @@
 package manager;
 
 import java.util.*;
-
+/*
+ * @authors Rami Maalouf, Max Kaczmarek
+ * @TUT T02, T01
+ * @date 2022-4-7
+ */
 public class PremierLeagueManager {
 
     private final int maxNumberOfClubs;
@@ -17,15 +21,11 @@ public class PremierLeagueManager {
 
     }
 
-    public static String capitalize(String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
-        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-    }
-
     public void addClub(FootballClub club) {
-        league.add(club);
+        if((league.size() < maxNumberOfClubs) && (!league.contains(club))) {
+            // add club to league if club is not already in league and league is not full
+            league.add(club);
+        }
     }
     public void removeClub(FootballClub club) {
         league.remove(club);

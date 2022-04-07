@@ -2,7 +2,11 @@ package manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
+/*
+ * @authors Rami Maalouf, Max kaczmarek
+ * @TUT T02, T01
+ * @date 2022-4-7
+ */
 public class FootballClub extends SportsClub {
 
     private int winCount;
@@ -10,7 +14,6 @@ public class FootballClub extends SportsClub {
     private int defeatCount;
     private int scoredGoalsCount;
     private int receivedGoalsCount;
-    private final ArrayList<Player> players = new ArrayList<Player>();
 
     public FootballClub(String name) {
         super(name);
@@ -24,53 +27,6 @@ public class FootballClub extends SportsClub {
         this.scoredGoalsCount = scoredGoalsCount;
         this.receivedGoalsCount = receivedGoalsCount;
     }
-
-    /**
-     * setPlayers() method which adds 11 players to the football
-     * club, with random data for each player
-     */
-    public void setPlayers() {
-        // players who will attempt to score
-        for (int i = 0; i < 1; i++) {
-            Player player = new Player();
-            player.setGoalsScored(0);
-            player.setShotsTaken();
-            player.setShotsMissed();
-            players.add(player);
-        }
-
-        // players who will score
-        for (int i = 0; i < 2; i++) {
-            Player player = new Player();
-            player.setGoalsScored();
-            player.setShotsTaken();
-            player.setShotsMissed();
-            players.add(player);
-        }
-
-        // majority of players who won't score
-        for (int i = 0; i < 8; i++) {
-            Player player = new Player();
-            player.setGoalsScored(0);
-            player.setShotsTaken(0);
-            player.setShotsMissed();
-            players.add(player);
-        }
-
-    }
-
-    /**
-     * Method for dislpaying each player's stats for the given club
-     */
-    public void displayAllPlayerStats() {
-        for (int i = 0; i < players.size(); i++) {
-            System.out.println("****** PLAYER " + (i + 1) + "******");
-            System.out.println("Goals: " + players.get(i).getGoalsScored());
-            System.out.println("Shots taken: " + players.get(i).getShotsTaken());
-            System.out.println("Shots missed: " + players.get(i).getShotsMissed() + "\n");
-        }
-    }
-
 
     public int getWinCount() {
         return winCount;
@@ -120,25 +76,6 @@ public class FootballClub extends SportsClub {
     public void addDefeat() {
         defeatCount++;
     }
-
-    /**
-     * Method for finding and returning the best player for specified club, aka
-     * player who has scored most goals. Can be possibly refined to compare
-     * ratio of shots taken/shots missed instead
-     *
-     * @return player with the most goals
-     */
-    public void getBestPlayer() {
-        ArrayList<Integer> goals = new ArrayList<Integer>();
-        for (Player player : players) {
-            goals.add(player.getGoalsScored());
-        }
-
-
-        int maximumGoals = Collections.max(goals);
-        System.out.println("Best player for club " + getName() + " is PLAYER " + (goals.indexOf(maximumGoals) + 1) + "\n\n");
-    }
-
 
     /**
      * Method for displaying overall stats

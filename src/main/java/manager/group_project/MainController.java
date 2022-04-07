@@ -24,18 +24,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static manager.group_project.MainApplication.*;
+import static manager.group_project.Main.*;
 
+/*
+ * @authors Rami Maalouf, Max kaczmarek
+ * @TUT T02, T01
+ * @date 2022-4-7
+ */
 public class MainController implements Initializable {
-
-    private boolean sortedByGoals;
-
-    public static String capitalize(String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
-        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-    }
 
     private PremierLeagueManager plm;
 
@@ -68,6 +64,18 @@ public class MainController implements Initializable {
     @FXML
     private TextField viewClubStatsTextfield;
 
+    @FXML
+    private Button addMatch;
+    @FXML
+    private Button removeClub;
+    @FXML
+    private Button viewClubStats;
+    @FXML
+    private Button viewRawData;
+    @FXML
+    private Button goalsPerGame;
+
+    private boolean sortedByGoals;
 
     /**
      * this is our about page
@@ -81,17 +89,6 @@ public class MainController implements Initializable {
         alert.setContentText("Authors: Rami Maalouf, Max kaczmarek\nEmails: rami.rami@ucalgary.ca, maximilian.kaczmarek@ucalgary.ca\nVersion: v1.0\nThis project is a soccer league manager (simulator)");
         alert.show();
     }
-
-    @FXML
-    private Button addMatch;
-    @FXML
-    private Button removeClub;
-    @FXML
-    private Button viewClubStats;
-    @FXML
-    private Button viewRawData;
-    @FXML
-    private Button goalsPerGame;
 
     /**
      * adds a new match to the league
@@ -155,10 +152,10 @@ public class MainController implements Initializable {
             }
             // after checking the validity of the inputed data, we add the match to the league
             Match match = new Match();
-            match.setHomeTeam(home);
-            match.setAwayTeam(away);
-            match.setHomeTeamScore(homeGoals);
-            match.setAwayTeamScore(awayGoals);
+            match.setHomeClub(home);
+            match.setAwayClub(away);
+            match.setHomeGoals(homeGoals);
+            match.setAwayGoals(awayGoals);
             plm.addMatch(match);
             home.setScoredGoalsCount(home.getScoredGoalsCount() + homeGoals);
             away.setScoredGoalsCount(away.getScoredGoalsCount() + awayGoals);
@@ -208,6 +205,11 @@ public class MainController implements Initializable {
     }
 
 
+    /**
+     * runs then the sort/unsort button is pressed
+     * this button acts like a switch the way the arraylist is sorted
+     * @param event
+     */
     @FXML
     void goalsPerGame(MouseEvent event) {
         if (sortedByGoals) { // if sorted by goals per game, sort by points
@@ -230,6 +232,11 @@ public class MainController implements Initializable {
             status.setTextFill(Color.RED);
         }
     }
+
+    /**
+     * loads the world from a file
+     * @param event
+     */
     @FXML
     void loadWorld(ActionEvent event) {
         plm = new PremierLeagueManager(numOfClubs);
@@ -267,15 +274,15 @@ public class MainController implements Initializable {
                 Match m = new Match();
                 for (FootballClub club : plm.getLeague()) {
                     if (club.getName().equalsIgnoreCase(parts[0])) {
-                        m.setHomeTeam(club);
+                        m.setHomeClub(club); //sets the home team name
                     }
                     if (club.getName().equalsIgnoreCase(parts[1])) {
-                        m.setAwayTeam(club);
+                        m.setAwayClub(club); //sets the away team name
                     }
                 }
-                m.setHomeTeamScore(Integer.parseInt(parts[2]));
-                m.setAwayTeamScore(Integer.parseInt(parts[3]));
-                plm.addMatch(m); //adds the match to the league
+                m.setHomeGoals(Integer.parseInt(parts[2])); //sets the home team score for the match
+                m.setAwayGoals(Integer.parseInt(parts[3])); //sets the away team score for the match
+                plm.addMatch(m); //adds that match to the league
             }
             status.setText("League loaded successfully!");
             updateLeaderboard();
@@ -314,6 +321,17 @@ public class MainController implements Initializable {
         }
     }
 
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
     /**
      * adds a club to the league
      * @param event
@@ -326,12 +344,18 @@ public class MainController implements Initializable {
             status.setTextFill(Color.RED);
             return;
         }
-        FootballClub club = new FootballClub(capitalize(addClubTextfield.getText())); //TODO: makes sure club name is not a number
+        if(isNumeric(addClubTextfield.getText())){
+            status.setText("Club name can't be a number");
+            status.setTextFill(Color.RED);
+            return;
+        }
+        FootballClub club = new FootballClub(capitalize(addClubTextfield.getText()));
 
         if (plm.getLeague().contains(club)) {   //checks if the club already exists
             status.setText("This club is already in the league");
             status.setTextFill(Color.RED);
         } else {
+            //if club doesn't exist, it adds the club to the league
             plm.addClub(club);
             status.setText("Club added");
             addMatch.setDisable(false);
@@ -391,6 +415,9 @@ public class MainController implements Initializable {
         status.setText("League saved!");
     }
 
+    /**
+     * updates the match history log
+     */
     void updateMatchLog(){
         StringBuilder sb = new StringBuilder();
         for(Match match : plm.getMatches()){
@@ -400,6 +427,9 @@ public class MainController implements Initializable {
         matchLogsArea.setFont(Font.font("Courier New", FontWeight.BOLD, 29));
     }
 
+    /**
+     * updates the leaderboard
+     */
     void updateLeaderboard() {
         Collections.sort(plm.getLeague(), new FootballClubPointsComparator());
         StringBuilder sb = new StringBuilder();
@@ -439,6 +469,11 @@ public class MainController implements Initializable {
         status.setText("Raw data shown");
     }
 
+    /**
+     * first thing that runs when the program starts
+     * @param url
+     * @param resourceBundle
+     */
     @Override @FXML
     public void initialize(URL url, ResourceBundle resourceBundle) {
         plm = new PremierLeagueManager(numOfClubs);
@@ -454,16 +489,18 @@ public class MainController implements Initializable {
                 Match m = new Match();
                 for (FootballClub club : plm.getLeague()) {
                     if (club.getName().equalsIgnoreCase(parts[0])) {
-                        m.setHomeTeam(club);
+                        m.setHomeClub(club);
                     }
                     if (club.getName().equalsIgnoreCase(parts[1])) {
-                        m.setAwayTeam(club);
+                        m.setAwayClub(club);
                     }
                 }
-                m.setHomeTeamScore(Integer.parseInt(parts[2]));
-                m.setAwayTeamScore(Integer.parseInt(parts[3]));
+                m.setHomeGoals(Integer.parseInt(parts[2]));
+                m.setAwayGoals(Integer.parseInt(parts[3]));
+                // gets all the info from the data and adds it to the match
                 plm.addMatch(m);
             }
+            //updates the match history log and leaderboard
             updateLeaderboard();
             updateMatchLog();
         }
@@ -475,7 +512,7 @@ public class MainController implements Initializable {
             viewRawData.setDisable(true);
             goalsPerGame.setDisable(true);
         }
-
+        //sets the textfields only to be readable
         leaderboardArea.setEditable(false);
         leaderboardArea.setMouseTransparent(true);
         leaderboardArea.setFocusTraversable(false);

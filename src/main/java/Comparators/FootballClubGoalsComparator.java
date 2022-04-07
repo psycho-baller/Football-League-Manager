@@ -4,7 +4,11 @@ import manager.FootballClub;
 
 import java.util.Comparator;
 
-
+/*
+ * @authors Rami Maalouf, Max kaczmarek
+ * @TUT T02, T01
+ * @date 2022-4-7
+ */
 public class FootballClubGoalsComparator implements Comparator<FootballClub> {
 
     @Override

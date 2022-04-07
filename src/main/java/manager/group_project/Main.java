@@ -11,16 +11,31 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-public class MainApplication extends Application {
+/*
+ * @authors Rami Maalouf, Max kaczmarek
+ * @TUT T02, T01
+ * @date 2022-4-7
+ */
+public class Main extends Application {
     public static boolean hasArguments = false;
     public static String data;
     static int numOfClubs = 10; // default max number of clubs
 
+    /**
+     * makes a string's first letter capitalized
+     * @param str
+     * @return
+     */
+    public static String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("Main.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("Main.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 630);
         stage.setTitle("Football Manager");
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());

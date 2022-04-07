@@ -1,5 +1,9 @@
 package manager;
-
+/*
+ * @authors Rami Maalouf, Max kaczmarek
+ * @TUT T02, T01
+ * @date 2022-4-7
+ */
 public class Match {
 
     private FootballClub homeTeam;
@@ -25,19 +29,19 @@ public class Match {
     }
 
 
-    public void setHomeTeam(FootballClub homeTeam) {
+    public void setHomeClub(FootballClub homeTeam) {
         this.homeTeam = homeTeam;
     }
 
-    public void setAwayTeam(FootballClub awayTeam) {
+    public void setAwayClub(FootballClub awayTeam) {
         this.awayTeam = awayTeam;
     }
 
-    public void setHomeTeamScore(int homeTeamScore) {
+    public void setHomeGoals(int homeTeamScore) {
         this.homeTeamScore = homeTeamScore;
     }
 
-    public void setAwayTeamScore(int awayTeamScore) {
+    public void setAwayGoals(int awayTeamScore) {
         this.awayTeamScore = awayTeamScore;
     }
 
