@@ -37,7 +37,6 @@ public class MainApplication extends Application {
             PremierLeagueManager plm = new PremierLeagueManager(numOfClubs);
             BufferedReader reader = null;
             try {
-                System.out.println(data);
                 //save league into a csv file
                 reader = new BufferedReader(new FileReader(data));
                 loadData(reader);

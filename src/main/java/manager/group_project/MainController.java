@@ -69,12 +69,16 @@ public class MainController implements Initializable {
     private TextField viewClubStatsTextfield;
 
 
+    /**
+     * this is our about page
+     * @param event
+     */
     @FXML
     void aboutAlert(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About");
         alert.setHeaderText("Message");
-        alert.setContentText("Author: Rami Maalouf\nEmail: rami.rami@ucalgary.ca\nVersion: v1.0\n");// TODO description
+        alert.setContentText("Authors: Rami Maalouf, Max kaczmarek\nEmails: rami.rami@ucalgary.ca, maximilian.kaczmarek@ucalgary.ca\nVersion: v1.0\nThis project is a soccer league manager (simulator)");
         alert.show();
     }
 
@@ -89,6 +93,10 @@ public class MainController implements Initializable {
     @FXML
     private Button goalsPerGame;
 
+    /**
+     * adds a new match to the league
+     * @param event
+     */
     @FXML
     void addMatch(MouseEvent event) {
         if (awayClubNameTextfield.getText().isEmpty() || homeClubNameTextfield.getText().isEmpty() || awayGoalsTextfield.getText().isEmpty() || homeGoalsTextfield.getText().isEmpty()) {
@@ -102,8 +110,10 @@ public class MainController implements Initializable {
                     home = club;
                 }
             }
+            //if the home club is not in the league
             if (home == null) {
                 status.setText("Home club does not exist in the league");
+                status.setTextFill(Color.RED);
                 return;
             }
             String awayClubName = awayClubNameTextfield.getText();
@@ -112,6 +122,7 @@ public class MainController implements Initializable {
                 if (club.getName().equals(capitalize(awayClubName)))
                     away = club;
             }
+            //if the away club is not in the league
             if (away == null){
                 status.setText("Home club does not exist in the league");
                 return;
@@ -128,7 +139,7 @@ public class MainController implements Initializable {
                 return;
             }
             if (homeGoals == -1) {
-                System.out.println("You have to enter number of goals");
+                status.setText("You have to enter number of goals");
                 return;
             }
             int awayGoals = -1;
@@ -142,6 +153,7 @@ public class MainController implements Initializable {
                 status.setText("You have to enter number of goals");
                 return;
             }
+            // after checking the validity of the inputed data, we add the match to the league
             Match match = new Match();
             match.setHomeTeam(home);
             match.setAwayTeam(away);
@@ -174,8 +186,11 @@ public class MainController implements Initializable {
         System.exit(0);
     }
 
+    /**
+     * gets the comparator and sorts the arraylist by goals per game then prints it to the leaderboard textarea
+     */
     void sortByGoalsPerGame(){
-        Collections.sort(plm.getLeague(), new FootballClubGoalsComparator());
+        Collections.sort(plm.getLeague(), new FootballClubGoalsComparator()); // sorts the arraylist of clubs by goals per game
         StringBuilder sb = new StringBuilder();
         sb.append("Rank\t").append("Club\t").append("Points\t").append("Goals/match\t").append("Wins\t").append("Losses\n");
         int rank = 1;
@@ -192,17 +207,22 @@ public class MainController implements Initializable {
         leaderboardArea.setFont(Font.font("Courier New", FontWeight.BOLD, 13));
     }
 
+
     @FXML
     void goalsPerGame(MouseEvent event) {
-        if (sortedByGoals) {
+        if (sortedByGoals) { // if sorted by goals per game, sort by points
             sortedByGoals = false;
             updateLeaderboard();
-        }else{
+        }else{ // if sorted by points, sort by goals per game
             sortedByGoals = true;
             sortByGoalsPerGame();
         }
     }
 
+    /**
+     * checks if file exists, and is readable
+     * @param fileWorld
+     */
     private void checkFiles(File fileWorld) {
         //Check world file
         if (!fileWorld.exists() || !fileWorld.isFile() || !fileWorld.canRead()) {
@@ -215,6 +235,7 @@ public class MainController implements Initializable {
         plm = new PremierLeagueManager(numOfClubs);
         try {
             FileChooser fc = new FileChooser();
+            // only allows .txt files and CSV files to be selected
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text files", "*.txt"));
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Comma Separated Values files", "*.csv"));
 
@@ -235,10 +256,11 @@ public class MainController implements Initializable {
             List<String> match = lines.subList(lines.indexOf("") + 1, lines.size());
 
 
+            //gets all the info from the data.csv file and adds it to the league
             for (String s : clubs) {
                 String[] parts = s.split(",");
                 FootballClub club =  new FootballClub(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5]));
-                plm.addClub(club);
+                plm.addClub(club); //adds the club to the league
             }
             for (String s : match) {
                 String[] parts = s.split(",");
@@ -253,13 +275,13 @@ public class MainController implements Initializable {
                 }
                 m.setHomeTeamScore(Integer.parseInt(parts[2]));
                 m.setAwayTeamScore(Integer.parseInt(parts[3]));
-                plm.addMatch(m);
+                plm.addMatch(m); //adds the match to the league
             }
             status.setText("League loaded successfully!");
             updateLeaderboard();
             updateMatchLog();
 
-            if (plm.getLeague().size() != 0) {
+            if (plm.getLeague().size() != 0) { //if there are clubs in the league, enable all the buttons
                 addMatch.setDisable(false);
                 removeClub.setDisable(false);
                 viewClubStats.setDisable(false);
@@ -275,6 +297,10 @@ public class MainController implements Initializable {
 
     }
 
+    /**
+     * removes a club from the league
+     * @param event
+     */
     @FXML
     void removeClub(MouseEvent event) {
         FootballClub club = new FootballClub(capitalize(addClubTextfield.getText()));
@@ -287,6 +313,11 @@ public class MainController implements Initializable {
             status.setTextFill(Color.RED);
         }
     }
+
+    /**
+     * adds a club to the league
+     * @param event
+     */
     @FXML
     void addClub(MouseEvent event) {
         //checks if the league is full
@@ -295,7 +326,7 @@ public class MainController implements Initializable {
             status.setTextFill(Color.RED);
             return;
         }
-        FootballClub club = new FootballClub(capitalize(addClubTextfield.getText()));
+        FootballClub club = new FootballClub(capitalize(addClubTextfield.getText())); //TODO: makes sure club name is not a number
 
         if (plm.getLeague().contains(club)) {   //checks if the club already exists
             status.setText("This club is already in the league");
@@ -366,7 +397,7 @@ public class MainController implements Initializable {
             sb.append(match.toString()).append("\n");
         }
         matchLogsArea.setText(sb.toString());
-        matchLogsArea.setFont(Font.font("Courier New", FontWeight.BOLD, 30));
+        matchLogsArea.setFont(Font.font("Courier New", FontWeight.BOLD, 29));
     }
 
     void updateLeaderboard() {
@@ -387,7 +418,8 @@ public class MainController implements Initializable {
         for (FootballClub club : plm.getLeague()) {
             if (club.getName().equalsIgnoreCase(viewClubStatsTextfield.getText())) {
                 matchLogsArea.setText(club.toString());
-                matchLogsArea.setFont(Font.font("Courier New", FontWeight.BOLD, 28));
+                matchLogsArea.setFont(Font.font("", FontWeight.BOLD, 21));
+                status.setText("club stats shown");
                 return;
             }
         }
@@ -400,15 +432,17 @@ public class MainController implements Initializable {
         StringBuilder sb = new StringBuilder();
         for (FootballClub club : plm.getLeague()) {
             sb.append(club.toString()).append("\n");
-            sb.append("---------------------").append("\n");
+            sb.append("--------------------").append("\n");
         }
         matchLogsArea.setText(sb.toString());
-        matchLogsArea.setFont(Font.font("courier", FontWeight.SEMI_BOLD, 28));
+        matchLogsArea.setFont(Font.font("", FontWeight.SEMI_BOLD, 25));
+        status.setText("Raw data shown");
     }
 
     @Override @FXML
     public void initialize(URL url, ResourceBundle resourceBundle) {
         plm = new PremierLeagueManager(numOfClubs);
+        //gets the hasArguments from the main class if there are any arguments then we get the data from the file which was given as an argument
         if(hasArguments){
             for (String s : clubs) {
                 String[] parts = s.split(",");
@@ -434,12 +468,14 @@ public class MainController implements Initializable {
             updateMatchLog();
         }
         if (plm.getLeague().size() == 0) {
+            status.setText("No clubs in the league");
             addMatch.setDisable(true);
             removeClub.setDisable(true);
             viewClubStats.setDisable(true);
             viewRawData.setDisable(true);
             goalsPerGame.setDisable(true);
         }
+
         leaderboardArea.setEditable(false);
         leaderboardArea.setMouseTransparent(true);
         leaderboardArea.setFocusTraversable(false);
