@@ -7,7 +7,6 @@ import java.util.*;
  * @date 2022-4-7
  */
 public class PremierLeagueManager {
-
     private final int maxNumberOfClubs;
 
     private final ArrayList<FootballClub> league;
@@ -18,7 +17,6 @@ public class PremierLeagueManager {
         this.maxNumberOfClubs = maxNumberOfClubs;
         league = new ArrayList<>();
         matches = new ArrayList<>();
-
     }
 
     public void addClub(FootballClub club) {
@@ -43,8 +41,3 @@ public class PremierLeagueManager {
         return maxNumberOfClubs;
     }
 }
-    
-    
-    
-    
-
