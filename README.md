@@ -1,4 +1,4 @@
- ## Football League Manager
+# Football League Manager
 Football league manager is a football league simulator where u can add clubs, matches, and look at cool data from these matches
 
 ## Features
