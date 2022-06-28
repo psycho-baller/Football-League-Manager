@@ -1,5 +1,16 @@
-## Football League Manager
+ ## Football League Manager
 Football league manager is a football league simulator where u can add clubs, matches, and look at cool data from these matches
+
+## Features
+<img width="900" alt="image" src="https://user-images.githubusercontent.com/81759594/176271603-4b6e74d5-5cdd-480d-aa26-f1cb685dc774.png">
+
+- On the left side of the UI, we have the addition of data (Adding football clubs, and a played match)
+
+- In the middle, we can render 2 different Leaderboards, one that ranks the clubs based on points and one that ranks them based on goals/match (sorted using [comparators](https://github.com/psycho-baller/Football-League-Manager/tree/master/src/main/java/Comparators)). We can alternate between each render using the button under the leaderboards
+
+- The right side of the UI is for retrieving data, by default, the match log will be rendered, but when the `view raw data` button is pressed, we would see all the data of all the clubs in the league. And lastly, if we want to view personalized stats for a Club in the League, we can do that by writing down the club name and clicking `view club stats` (that's being rendered in the above image)
+
+- In addition, you can save and load previously saved League progress. Data is stored using the [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) format. You can find an example of how the data is stored [here](https://github.com/psycho-baller/Football-League-Manager/blob/master/src/main/resources/data.csv)
 
 ## How to run the League Manager
 - First you will have to make sure you have a JDK installed in your machine (at least version 16). You can install the latest version [here](https://www.java.com/en/download/)
