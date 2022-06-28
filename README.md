@@ -6,7 +6,7 @@ Football league manager is a football league simulator where u can add clubs, ma
 
 - On the left side of the UI, we have the addition of data (Adding football clubs, and a played match)
 
-- In the middle, we can render 2 different Leaderboards, one that ranks the clubs based on points and one that ranks them based on goals/match (sorted using [comparators](https://github.com/psycho-baller/Football-League-Manager/tree/master/src/main/java/Comparators)). We can alternate between each render using the button under the leaderboards
+- In the middle, we can render 2 different Leaderboards, one that ranks the clubs based on points and one that ranks them based on goals/match (sorted using [Comparators](https://github.com/psycho-baller/Football-League-Manager/tree/master/src/main/java/Comparators)). We can alternate between each render using the button under the leaderboards
 
 - The right side of the UI is for retrieving data, by default, the match log will be rendered, but when the `view raw data` button is pressed, we would see all the data of all the clubs in the league. And lastly, if we want to view personalized stats for a Club in the League, we can do that by writing down the club name and clicking `view club stats` (that's being rendered in the above image)
 
